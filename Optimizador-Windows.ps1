@@ -424,6 +424,21 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PCHealthCheck" -Name "installed
 
 Write-Host "Propiedades del registro establecidas correctamente."
 
+# ID de la extensión AdGuard
+$extensionID = "pdffkfellgipmhklpdmokmckkkfcopbh"
+# URL de actualización de la extensión (Microsoft Edge Web Store)
+$updateUrl = "https://edge.microsoft.com/extensionwebstorebase/v1/crx"
+# Ruta de registro para instalar extensiones en Edge
+$registryPath = "HKLM:\Software\Policies\Microsoft\Edge\ExtensionInstallForcelist"
+
+# Crear la clave de registro si no existe
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force
+}
+# Agregar la extensión AdGuard al registro para que se instale automáticamente
+Set-ItemProperty -Path $registryPath -Name 1 -Value "$extensionID;$updateUrl"
+Write-Host "La extensión AdGuard ha sido configurada para instalarse automáticamente en Microsoft Edge."
+
 # Desactivar mostrar color de é®¦asis en inicio y barra de tareas
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "ColorPrevalence" -Value 0
 # Desactivar mostrar color de é®¦asis en la barra de tñ‘¬o y bordes de ventana

@@ -424,21 +424,6 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\PCHealthCheck" -Name "installed
 
 Write-Host "Propiedades del registro establecidas correctamente."
 
-# ID de la extensión AdGuard
-$extensionID = "pdffkfellgipmhklpdmokmckkkfcopbh"
-# URL de actualización de la extensión (Microsoft Edge Web Store)
-$updateUrl = "https://edge.microsoft.com/extensionwebstorebase/v1/crx"
-# Ruta de registro para instalar extensiones en Edge
-$registryPath = "HKLM:\Software\Policies\Microsoft\Edge\ExtensionInstallForcelist"
-
-# Crear la clave de registro si no existe
-if (-not (Test-Path $registryPath)) {
-    New-Item -Path $registryPath -Force
-}
-# Agregar la extensión AdGuard al registro para que se instale automáticamente
-Set-ItemProperty -Path $registryPath -Name 1 -Value "$extensionID;$updateUrl"
-Write-Host "La extensión AdGuard ha sido configurada para instalarse automáticamente en Microsoft Edge."
-
 # Desactivar mostrar color de é®¦asis en inicio y barra de tareas
 Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize" -Name "ColorPrevalence" -Value 0
 # Desactivar mostrar color de é®¦asis en la barra de tñ‘¬o y bordes de ventana
@@ -787,7 +772,6 @@ Write-Host "Borrar archivos temporales cuando las apps no se usen"
 	}
   
 Write-Host "Deshabilitar noticias e intereses"
-
 # Verificar si el objeto $ResultText tiene la propiedad 'text'
 if ($ResultText -and $ResultText.PSObject.Properties.Match("text").Count -gt 0) {
     $ResultText.text += "`r`n" +"Disabling Extra Junk"
@@ -803,7 +787,6 @@ if (-not (Test-Path $registryPath)) {
 
 # Establecer la propiedad EnableFeeds
 Set-ItemProperty -Path $registryPath -Name "EnableFeeds" -Type DWord -Value 0
-
 
 Write-Host "Removiendo noticias e interes de la barra de tareas" 
     Set-ItemProperty -Path  "HKCU:\Software\Microsoft\Windows\CurrentVersion\Feeds" -Name "ShellFeedsTaskbarViewMode" -Type DWord -Value 0
@@ -1167,10 +1150,25 @@ if ($HideFirstRun.HideFirstRunExperience -eq 1) {
     Write-Host "No se pudo desactivar la pantalla de bienvenida de Microsoft Edge."
 }
 
+# ID de la extensión AdGuard
+$extensionID = "pdffkfellgipmhklpdmokmckkkfcopbh"
+# URL de actualización de la extensión (Microsoft Edge Web Store)
+$updateUrl = "https://edge.microsoft.com/extensionwebstorebase/v1/crx"
+# Ruta de registro para instalar extensiones en Edge
+$registryPath = "HKLM:\Software\Policies\Microsoft\Edge\ExtensionInstallForcelist"
+
+# Crear la clave de registro si no existe
+if (-not (Test-Path $registryPath)) {
+    New-Item -Path $registryPath -Force
+}
+# Agregar la extensión AdGuard al registro para que se instale automáticamente
+Set-ItemProperty -Path $registryPath -Name 1 -Value "$extensionID;$updateUrl"
+Write-Host "La extensión AdGuard ha sido configurada para instalarse automáticamente en Microsoft Edge."
+
 # Verificar si el proceso de Microsoft Edge estÃ¡ en ejecuciÃ³n y detenerlo
 $processName = "msedge"
 Start-Process "msedge.exe"
-Start-Sleep 5
+Start-Sleep 60
 if (Get-Process -Name $processName -ErrorAction SilentlyContinue) {
     Write-Output "Deteniendo el proceso $processName..."
 
@@ -1468,7 +1466,6 @@ if ($numberOfAdapters -eq 1) {
 	Disable-NetAdapterBinding -Name 'Ethernet' -ComponentID 'ms_tcpip6'
 	Disable-NetAdapterBinding -Name 'Wi-Fi' -ComponentID 'ms_tcpip6'
 	ipconfig /flushdns
-    
 } elseif ($numberOfAdapters -eq 2) {
     # Ejecutar el segundo script si hay dos tarjetas de red
     Write-Host "Aplicando configuracion para tarjeta de red #2"
@@ -1479,7 +1476,6 @@ if ($numberOfAdapters -eq 1) {
 	Disable-NetAdapterBinding -Name 'Ethernet 2' -ComponentID 'ms_tcpip6'
 	Disable-NetAdapterBinding -Name 'Wi-Fi 2' -ComponentID 'ms_tcpip6'
 	ipconfig /flushdns
-    
 } else {
     # Caso para otras cantidades de tarjetas de red (puedes agregar mÃ¡s casos si es necesario)
     Write-Host "No existen tarjetas, Omiitiendo accion."
@@ -1520,8 +1516,6 @@ Start-Service -Name msiserver
 
 
 ############################## OPTIMIZAR DISCO SSD #############################
-
-
 # Función para verificar si el disco es un SSD
 function IsSSD {
     param (
@@ -1661,19 +1655,14 @@ if (IsSSD -driveLetter $systemDriveLetter) {
     }
 }
 
-
 # Configuración y ejecución de Cleanmgr
 Start-Process -FilePath "cmd.exe" -ArgumentList "/c Cleanmgr /sagerun:65535" -Wait
-
 # Eliminando carpeta ODT -> Proceso Final
 Remove-Item -Path "C:\ODT" -Recurse -Force
-
 # Eliminando Archivo Server -> Proceso Final
 Remove-Item -Path "$env:TEMP\server.txt" -Force
-
 # Reiniciar el sistema
 Start-Process -FilePath "shutdown.exe" -ArgumentList "-r -t 20 -c `"El Computador se podrá usar con normalidad después del reinicio.`"" -Wait
-
 #############################################################################################################################
 # Finalizar la transcripción
 Stop-Transcript

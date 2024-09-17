@@ -358,24 +358,24 @@ if (Check-WindowsActivation) {
 
 ########################################### 8. Wallpaper Modificacion de rutina ###########################################
 # Ruta del archivo
-$rutaArchivo = "$env:windir\Web\Wallpaper\Abstract\Abstract1.jpg"
-
+#$rutaArchivo = "$env:windir\Web\Wallpaper\Abstract\Abstract1.jpg"
+#
 # Verificar si el archivo existe
-if (Test-Path $rutaArchivo) {
-    Write-Host "El archivo se encuentra, no es necesario aplicar."
-} else {
-    # Descargar el archivo
-    $url = "http://$fileContent/files/Abstract.zip"
-	
-    $outputPath = "$env:TEMP\Abstract.zip"
-    Write-Host "Descargando Fotos para la personalizacion"
-    Invoke-WebRequest -Uri $url -OutFile $outputPath
-    Expand-Archive -Path "$env:TEMP\Abstract.zip" -DestinationPath "C:\Windows\Web\Wallpaper\" -Force
-    Remove-Item -Path "$env:TEMP\Abstract.zip"
-    Start-Sleep 5
-    cls
-    Write-Host "El archivo ha sido descargado."
-}
+#if (Test-Path $rutaArchivo) {
+#    Write-Host "El archivo se encuentra, no es necesario aplicar."
+#} else {
+#    # Descargar el archivo
+#    $url = "http://$fileContent/files/Abstract.zip"
+##	
+#    $outputPath = "$env:TEMP\Abstract.zip"
+#    Write-Host "Descargando Fotos para la personalizacion"
+#    Invoke-WebRequest -Uri $url -OutFile $outputPath
+#    Expand-Archive -Path "$env:TEMP\Abstract.zip" -DestinationPath "C:\Windows\Web\Wallpaper\" -Force
+#    Remove-Item -Path "$env:TEMP\Abstract.zip"
+#    Start-Sleep 5
+#    cls
+#    Write-Host "El archivo ha sido descargado."
+#}
 ########################################### 9. MODULO DE OPTIMIZACION DE INTERNET ###########################################
 # Otorgar permisos a los administradores
 #icacls "$env:windir\Web\Screen\img100.jpg" /grant Administradores:F
@@ -385,16 +385,16 @@ if (Test-Path $rutaArchivo) {
 # Copiar el archivo de un lugar a otro
 #Copy-Item "$env:windir\Web\Wallpaper\Abstract\Abstract1.jpg" "$env:windir\Web\Screen\img100.jpg"
 Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name 'DisableLogonBackgroundImage' -Value 0 -Force
-Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name 'LockScreenImage' -Value 'C:\Windows\Web\Screen\img103.jpg'
+#Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name 'LockScreenImage' -Value 'C:\Windows\Web\Screen\img103.jpg'
 #Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -Name 'DisableLogonBackgroundImage' -Value 0 -Force
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoLockScreenCamera" -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "LockScreenOverlaysDisabled" -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name "NoChangingLockScreen" -Value 1
 
-$WallPaperPath = "C:\Windows\Web\Wallpaper\Abstract\Abstract1.jpg"
+#$WallPaperPath = "C:\Windows\Web\Wallpaper\Abstract\Abstract1.jpg"
 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WallpaperStyle" -Value 2
 Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "JPEGImportQuality" -Value 256
-Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WallPaper" -Value $WallPaperPath
+#Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "WallPaper" -Value $WallPaperPath
 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "DisableAcrylicBackgroundOnLogon" -Value 1
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 0

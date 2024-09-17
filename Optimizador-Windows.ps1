@@ -214,7 +214,7 @@ if (Test-Server $primaryServer) {
     Download-File $primaryServer $destinationPath1
 } elseif (Test-Server $secondaryServer) {
     Write-Output "El servidor primario está fuera de línea. Intentando con el servidor secundario..."
-    Start-Sleep 3
+    Start-Sleep 1
     Write-Output "El servidor secundario está en línea. aplicando Servidor"
     Download-File $secondaryServer $destinationPath1
 } else {

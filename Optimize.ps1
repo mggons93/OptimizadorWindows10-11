@@ -48,7 +48,40 @@ if (Get-ItemProperty -Path $regPath -Name $regName -ErrorAction SilentlyContinue
 Set-ItemProperty -Path $regPath -Name $regName -Value $minRestorePointInterval -Type DWord
 
 Write-Host "El intervalo mínimo entre la creación de puntos de restauración se ha establecido en $minRestorePointInterval segundos."
+# Obtener todas las tarjetas de red
+$networkAdapters = Get-NetAdapter
 
+# Verificar la cantidad de tarjetas de red
+$numberOfAdapters = $networkAdapters.Count
+
+if ($numberOfAdapters -eq 1) {
+    # Ejecutar el primer script si hay una tarjeta de red
+    Write-Host "Aplicando configuracion para tarjeta de red #1"
+	Write-Host "Agregando DNS de Adguard - ELiminar publicidad"
+	Get-NetAdapterBinding -ComponentID ms_tcpip6
+	set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
+	set-DnsClientServerAddress -InterfaceAlias "Wi-Fi" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
+	Disable-NetAdapterBinding -Name 'Ethernet' -ComponentID 'ms_tcpip6'
+	Disable-NetAdapterBinding -Name 'Wi-Fi' -ComponentID 'ms_tcpip6'
+	ipconfig /flushdns
+    
+} elseif ($numberOfAdapters -eq 2) {
+    # Ejecutar el segundo script si hay dos tarjetas de red
+    Write-Host "Aplicando configuracion para tarjeta de red #2"
+	Write-Host "Agregando DNS de Adguard - ELiminar publicidad"
+	Get-NetAdapterBinding -ComponentID ms_tcpip6
+	set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
+	set-DnsClientServerAddress -InterfaceAlias "Wi-Fi 2" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
+	Disable-NetAdapterBinding -Name 'Ethernet 2' -ComponentID 'ms_tcpip6'
+	Disable-NetAdapterBinding -Name 'Wi-Fi 2' -ComponentID 'ms_tcpip6'
+	ipconfig /flushdns
+    
+} else {
+    # Caso para otras cantidades de tarjetas de red (puedes agregar mÃ¡s casos si es necesario)
+    Write-Host "No existen tarjetas, Omiitiendo accion."
+}			
+Stop-Process -name explorer
+Start-Sleep -s 2
 
 #Write-Host "Creando punto de restauracion"
 # Crear un punto de restauraciÃ³n con una descripciÃ³n personalizada
@@ -58,40 +91,6 @@ Write-Host "El intervalo mínimo entre la creación de puntos de restauración s
 # Ruta del Registro
 $rutaRegistro = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager"
 Dism /Online /Set-ReservedStorageState /State:Disabled
-
-########################################### 1. COMPROBACION DE SERVICIO INTERNET  ###########################################
-$title = "Verificando acceso a internet..."
-$host.ui.RawUI.WindowTitle = $title
-
-# Definir una función para encapsular el código principal
-function Test-InternetConnection {
-    # Comprobar si hay conexión a internet haciendo ping a google.com
-    $internet = Test-Connection -ComputerName google.com -Count 1 -Quiet
-    # Si hay conexión, ejecutar el script
-    if ($internet) {
-        Write-Host "Conexión a Internet establecida. Ejecutando el script..."
-        # Escribir el nombre o la ruta del script aquí si es necesario
-    }
-    # Si no hay conexión, enviar un mensaje y volver a intentar
-    else {
-        # Mostrar mensaje de error y actualizar en el mismo lugar
-        $host.UI.RawUI.CursorPosition = @{X=0;Y=0}
-        Write-Host "No hay conexión a internet. Conéctate a una red Wi-Fi o Ethernet y vuelve a intentarlo." -NoNewline
-    }
-}
-
-# Bucle hasta que se tenga conexión a Internet
-while (-not (Test-Connection -ComputerName google.com -Count 1 -Quiet)) {
-    # Mostrar mensaje de verificación
-    Write-Host "Verificando tu conexión a internet..."
-    Write-Host "Recuerda conectar el cable de red o Wi-Fi para proceder con la instalación."
-
-    # Pausa de 10 segundos
-    Start-Sleep -Seconds 10
-}
-
-# Llamar a la función para ejecutar el script una vez que se tiene conexión
-Test-InternetConnection
 
  Write-Output '2% Completado'
 ########################################### 2. MODULO DE OPTIMIZACION DE INTERNET ###########################################
@@ -1449,7 +1448,7 @@ Write-Host "Habilitando la oferta de controladores a travÃ©s de Windows Update
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
 
-Write-Host "Habilitando el reinicio automÃ¡tico de Windows Update..."
+Write-Host "Habilitando el reinicio automatico de Windows Update..."
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
 
@@ -1461,12 +1460,12 @@ Write-Host "Habilitando proveedor de ubicaciÃ³n..."
 	Write-Host "Enabling Location Scripting..."
     Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableLocationScripting" -ErrorAction SilentlyContinue
 
-Write-Host "Habilitando ubicaciÃ³n..."
+Write-Host "Habilitando ubicacion."
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors" -Name "DisableLocation" -ErrorAction SilentlyContinue
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "SensorPermissionState" -ErrorAction SilentlyContinue
     Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeviceAccess\Global\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}" -Name "Value" -Type String -Value "Allow"
 
-Write-Host "Permitir el acceso a la ubicaciÃ³n..."
+Write-Host "Permitir el acceso a la ubicacion"
 	Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Type String -Value "Allow"
 	Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration" -Name "Status" -Type DWord -Value "1"
 	Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy" -Name "LetAppsAccessLocation" -ErrorAction SilentlyContinue
@@ -1529,41 +1528,6 @@ Write-Host "Enable Sensor de Almacenamiento x30 dias"
 
 			# Abra la pÃ¡gina "Aplicaciones en segundo plano"
 			#Start-Process -FilePath ms-settings:privacy-backgroundapps
-			
-# Obtener todas las tarjetas de red
-$networkAdapters = Get-NetAdapter
-
-# Verificar la cantidad de tarjetas de red
-$numberOfAdapters = $networkAdapters.Count
-
-if ($numberOfAdapters -eq 1) {
-    # Ejecutar el primer script si hay una tarjeta de red
-    Write-Host "Aplicando configuracion para tarjeta de red #1"
-	Write-Host "Agregando DNS de Adguard - ELiminar publicidad"
-	Get-NetAdapterBinding -ComponentID ms_tcpip6
-	set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
-	set-DnsClientServerAddress -InterfaceAlias "Wi-Fi" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
-	Disable-NetAdapterBinding -Name 'Ethernet' -ComponentID 'ms_tcpip6'
-	Disable-NetAdapterBinding -Name 'Wi-Fi' -ComponentID 'ms_tcpip6'
-	ipconfig /flushdns
-    
-} elseif ($numberOfAdapters -eq 2) {
-    # Ejecutar el segundo script si hay dos tarjetas de red
-    Write-Host "Aplicando configuracion para tarjeta de red #2"
-	Write-Host "Agregando DNS de Adguard - ELiminar publicidad"
-	Get-NetAdapterBinding -ComponentID ms_tcpip6
-	set-DnsClientServerAddress -InterfaceAlias "Ethernet 2" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
-	set-DnsClientServerAddress -InterfaceAlias "Wi-Fi 2" -ServerAddresses 8.8.8.8,181.57.227.194,190.165.72.48
-	Disable-NetAdapterBinding -Name 'Ethernet 2' -ComponentID 'ms_tcpip6'
-	Disable-NetAdapterBinding -Name 'Wi-Fi 2' -ComponentID 'ms_tcpip6'
-	ipconfig /flushdns
-    
-} else {
-    # Caso para otras cantidades de tarjetas de red (puedes agregar mÃ¡s casos si es necesario)
-    Write-Host "No existen tarjetas, Omiitiendo accion."
-}			
-Stop-Process -name explorer
-Start-Sleep -s 2
 
 # Asegúrate de ejecutar el script con privilegios administrativos
 

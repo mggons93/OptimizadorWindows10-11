@@ -604,7 +604,13 @@ $host.ui.RawUI.WindowTitle = $title
             "Microsoft.VCRedist.2012.x64",
             "Microsoft.VCRedist.2013.x64",
             "Microsoft.VCRedist.2015+.x64",
-            "Microsoft.DotNet.Runtime.3_1",
+	    "Microsoft.VCRedist.2005.x86",
+            "Microsoft.VCRedist.2008.x86",
+            "Microsoft.VCRedist.2010.x86",
+            "Microsoft.VCRedist.2012.x86",
+            "Microsoft.VCRedist.2013.x86",
+            "Microsoft.VCRedist.2015+.x86",
+	    "Microsoft.DotNet.Runtime.3_1",
             "Microsoft.DotNet.Runtime.5",
             "Microsoft.DotNet.Runtime.6",
             "Microsoft.DotNet.Runtime.7",
@@ -678,7 +684,7 @@ $host.ui.RawUI.WindowTitle = $title
     Write-Host "---------------------------------"
 
     # Restaurar la configuración regional original
-    Set-WinSystemLocale -SystemLocale $CurrentLocale.SystemLocale
+   # Set-WinSystemLocale -SystemLocale $CurrentLocale.SystemLocale
 #########################################################################################
     Write-Host "---------------------------------"
 	Write-Host "Descargando en segundo plano Archivos de instalación OEM"
